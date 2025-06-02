@@ -1,0 +1,49 @@
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (4 handlers)
+[GIN-debug] HEAD   /static/*filepath         --> github.com/gin-gonic/gin.(*RouterGroup).createStaticHandler.func1 (4 handlers)
+[GIN-debug] GET    /                         --> main.main.(*RouterGroup).StaticFile.func2 (4 handlers)
+[GIN-debug] HEAD   /                         --> main.main.(*RouterGroup).StaticFile.func2 (4 handlers)
+[GIN-debug] GET    /health                   --> main.main.func1 (4 handlers)
+[GIN-debug] POST   /api/v1/books             --> book-tracker/handlers.(*BookHandler).CreateBook-fm (4 handlers)
+[GIN-debug] GET    /api/v1/books             --> book-tracker/handlers.(*BookHandler).GetAllBooks-fm (4 handlers)
+[GIN-debug] GET    /api/v1/books/statuses    --> book-tracker/handlers.(*BookHandler).GetBookStatuses-fm (4 handlers)
+[GIN-debug] GET    /api/v1/books/:id         --> book-tracker/handlers.(*BookHandler).GetBook-fm (4 handlers)
+[GIN-debug] PUT    /api/v1/books/:id         --> book-tracker/handlers.(*BookHandler).UpdateBook-fm (4 handlers)
+[GIN-debug] DELETE /api/v1/books/:id         --> book-tracker/handlers.(*BookHandler).DeleteBook-fm (4 handlers)
+2025/06/02 19:10:18 Starting Book Tracker API server on port :12000
+2025/06/02 19:10:18 Health check: http://localhost:12000/health
+2025/06/02 19:10:18 API documentation available at: http://localhost:12000/api/v1/books/statuses
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :12000
+[GIN] 2025/06/02 - 19:10:23 | 200 |       65.84µs |       127.0.0.1 | GET      "/health"
+[GIN] 2025/06/02 - 19:10:27 | 200 |     4.59862ms |       127.0.0.1 | GET      "/"
+[GIN] 2025/06/02 - 19:11:51 | 200 |      138.25µs |      10.1.0.221 | GET      "/"
+[GIN] 2025/06/02 - 19:11:51 | 200 |      117.43µs |      10.1.0.221 | GET      "/api/v1/books"
+[GIN] 2025/06/02 - 19:12:03 | 201 |       166.6µs |      10.1.0.221 | POST     "/api/v1/books"
+[GIN] 2025/06/02 - 19:12:03 | 200 |        38.7µs |      10.1.0.221 | GET      "/api/v1/books"
+[GIN] 2025/06/02 - 19:12:17 | 200 |      630.42µs |      10.1.0.221 | PUT      "/api/v1/books/d396deae-260e-4871-acde-1e4e4fae5ba4"
+[GIN] 2025/06/02 - 19:12:17 | 200 |       27.71µs |      10.1.0.221 | GET      "/api/v1/books"
+[GIN] 2025/06/02 - 19:12:24 | 200 |       35.89µs |      10.1.0.221 | GET      "/api/v1/books?status=currently%20reading"
+[GIN] 2025/06/02 - 19:13:08 | 201 |       60.94µs |      10.1.0.221 | POST     "/api/v1/books"
+[GIN] 2025/06/02 - 19:13:08 | 200 |       50.49µs |      10.1.0.221 | GET      "/api/v1/books"
+[GIN] 2025/06/02 - 19:13:15 | 200 |       42.36µs |      10.1.0.221 | GET      "/api/v1/books?status=to%20be%20read"
+[GIN] 2025/06/02 - 19:13:24 | 200 |       57.87µs |      10.1.0.221 | PUT      "/api/v1/books/eb881ea5-695d-4e15-b585-b2efb8edb508"
+[GIN] 2025/06/02 - 19:13:24 | 200 |       35.72µs |      10.1.0.221 | GET      "/api/v1/books"
+[GIN] 2025/06/02 - 19:13:35 | 200 |       52.89µs |      10.1.0.221 | GET      "/api/v1/books?status=currently%20reading"
+[GIN] 2025/06/02 - 19:13:45 | 200 |       59.02µs |      10.1.0.221 | PUT      "/api/v1/books/d396deae-260e-4871-acde-1e4e4fae5ba4"
+[GIN] 2025/06/02 - 19:13:45 | 200 |       28.15µs |      10.1.0.221 | GET      "/api/v1/books"
+[GIN] 2025/06/02 - 19:13:53 | 200 |       29.21µs |      10.1.0.221 | GET      "/api/v1/books?status=read"
+[GIN] 2025/06/02 - 19:14:07 | 200 |       24.51µs |      10.1.0.221 | GET      "/api/v1/books?status=to%20be%20read"
+[GIN] 2025/06/02 - 19:14:15 | 200 |       30.92µs |      10.1.0.221 | GET      "/api/v1/books"
+[GIN] 2025/06/02 - 19:15:07 | 304 |       54.83µs |      10.1.0.221 | GET      "/"
+[GIN] 2025/06/02 - 19:15:07 | 200 |       32.08µs |      10.1.0.221 | GET      "/api/v1/books"
+[GIN] 2025/06/02 - 19:15:15 | 200 |      240.34µs |      10.1.0.221 | GET      "/api/v1/books?status=currently%20reading"
+[GIN] 2025/06/02 - 19:16:57 | 200 |      133.66µs |        10.1.0.3 | GET      "/"
+[GIN] 2025/06/02 - 19:16:57 | 200 |      150.56µs |       10.1.0.53 | GET      "/"
+[GIN] 2025/06/02 - 19:16:57 | 200 |       43.92µs |       10.1.0.53 | GET      "/api/v1/books"
