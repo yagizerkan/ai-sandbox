@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .book-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .book-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-to-be-read { background-color: #ffc107; color: #212529; }
+        .status-currently-reading { background-color: #17a2b8; color: white; }
+        .status-read { background-color: #28a745; color: white; }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .filter-buttons {
+            margin-bottom: 20px;
+        }
+        .filter-buttons button {
+            width: auto;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .book-actions {
+            margin-top: 10px;
+        }
+        .book-actions button {
+            width: auto;
+            margin-right: 10px;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Book Tracker</h1>
+    
+    <div class="container">
+        <h2>Add New Book</h2>
+        <div id="message"></div>
+        <form id="bookForm">
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="author">Author:</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                    <option value="">Select status...</option>
+                    <option value="to be read">To Be Read</option>
+                    <option value="currently reading">Currently Reading</option>
+                    <option value="read">Read</option>
+                </select>
+            </div>
+            <button type="submit">Add Book</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>My Library</h2>
+        <div class="filter-buttons">
+            <button onclick="loadBooks()">All Books</button>
+            <button onclick="loadBooks('to be read')">To Be Read</button>
+            <button onclick="loadBooks('currently reading')">Currently Reading</button>
+            <button onclick="loadBooks('read')">Read</button>
+        </div>
+        <div id="booksList"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1';
+
+        function showMessage(message, isError = false) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${message}</div>`;
+            setTimeout(() => {
+                messageDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function getStatusClass(status) {
+            return `status-${status.replace(/\s+/g, '-')}`;
+        }
+
+        async function loadBooks(status = '') {
+            try {
+                const url = status ? `${API_BASE}/books?status=${encodeURIComponent(status)}` : `${API_BASE}/books`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const booksListDiv = document.getElementById('booksList');
+                
+                if (data.books && data.books.length > 0) {
+                    booksListDiv.innerHTML = `
+                        <p><strong>${data.count} book(s) found</strong></p>
+                        ${data.books.map(book => `
+                            <div class="book-item">
+                                <h3>${book.title}</h3>
+                                <p><strong>Author:</strong> ${book.author}</p>
+                                <p><strong>Status:</strong> <span class="book-status ${getStatusClass(book.status)}">${book.status}</span></p>
+                                <p><strong>Added:</strong> ${new Date(book.created_at).toLocaleDateString()}</p>
+                                <div class="book-actions">
+                                    <button onclick="updateBookStatus('${book.id}', 'to be read')">Mark as To Be Read</button>
+                                    <button onclick="updateBookStatus('${book.id}', 'currently reading')">Mark as Currently Reading</button>
+                                    <button onclick="updateBookStatus('${book.id}', 'read')">Mark as Read</button>
+                                    <button class="delete-btn" onclick="deleteBook('${book.id}')">Delete</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    booksListDiv.innerHTML = '<p>No books found. Add some books to get started!</p>';
+                }
+            } catch (error) {
+                console.error('Error loading books:', error);
+                showMessage('Failed to load books', true);
+            }
+        }
+
+        async function updateBookStatus(bookId, newStatus) {
+            try {
+                const response = await fetch(`${API_BASE}/books/${bookId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (response.ok) {
+                    showMessage(`Book status updated to "${newStatus}"`);
+                    loadBooks();
+                } else {
+                    const error = await response.json();
+                    showMessage(error.error || 'Failed to update book', true);
+                }
+            } catch (error) {
+                console.error('Error updating book:', error);
+                showMessage('Failed to update book', true);
+            }
+        }
+
+        async function deleteBook(bookId) {
+            if (!confirm('Are you sure you want to delete this book?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/books/${bookId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showMessage('Book deleted successfully');
+                    loadBooks();
+                } else {
+                    const error = await response.json();
+                    showMessage(error.error || 'Failed to delete book', true);
+                }
+            } catch (error) {
+                console.error('Error deleting book:', error);
+                showMessage('Failed to delete book', true);
+            }
+        }
+
+        document.getElementById('bookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const bookData = {
+                title: formData.get('title'),
+                author: formData.get('author'),
+                status: formData.get('status')
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/books`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(bookData)
+                });
+
+                if (response.ok) {
+                    const book = await response.json();
+                    showMessage(`Book "${book.title}" added successfully!`);
+                    e.target.reset();
+                    loadBooks();
+                } else {
+                    const error = await response.json();
+                    showMessage(error.error || 'Failed to add book', true);
+                }
+            } catch (error) {
+                console.error('Error adding book:', error);
+                showMessage('Failed to add book', true);
+            }
+        });
+
+        // Load books when page loads
+        loadBooks();
+    </script>
+</body>
+</html>
